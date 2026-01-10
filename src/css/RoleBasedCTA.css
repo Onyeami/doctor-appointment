@@ -1,0 +1,79 @@
+/* Role Based CTA Styles */
+.role-cta-section {
+  background: #f8fdff;
+  padding: 40px 0 32px 0;
+  text-align: center;
+}
+.role-cta-section h2 {
+  color: #0077b6;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.register-provider-btn {
+  background: #0096c7;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+.register-provider-btn:hover {
+  background: #0077b6;
+}
+.login-link {
+  background: none;
+  color: #0077b6;
+  border: none;
+  font-size: 1rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.2s;
+}
+.login-link:hover {
+  color: #0096c7;
+}
+.role-cta-section {
+  background: #f8fdff;
+  padding: 40px 0 32px 0;
+  text-align: center;
+}
+.role-cta-section h2 {
+  color: #0077b6;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.register-provider-btn {
+  background: #0096c7;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+.register-provider-btn:hover {
+  background: #0077b6;
+}
+.login-link {
+  background: none;
+  color: #0077b6;
+  border: none;
+  font-size: 1rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.2s;
+}
+.login-link:hover {
+  color: #0096c7;
+}

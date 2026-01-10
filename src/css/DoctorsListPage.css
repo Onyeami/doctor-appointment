@@ -1,0 +1,73 @@
+/* Doctors List Page Styles */
+.doctors-list-page {
+    width: 100vw;
+	margin: 0 auto;
+	padding: 0px 0px;
+	min-height: 100vh;
+	display: flex;
+    align-items: center;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+.doctors-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.header-illustration {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem auto;
+  background: url('/src/assets/healthcare-hero.svg') no-repeat center/contain;
+}
+.doctors-header h1 {
+  color: #0077b6;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.doctors-header p {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.sticky-search-bar {
+  position: sticky;
+  top: 0;
+  
+  z-index: 10;
+  padding: 1rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .doctors-list-page {
+    padding: 16px 8px 24px 8px;
+    max-width: 98vw;
+  }
+  .doctors-header h1 {
+    font-size: 1.5rem;
+  }
+}
+@media (max-width: 600px) {
+  .doctors-list-page {
+    padding: 8px 2px 12px 2px;
+    border-radius: 8px;
+  }
+  .doctors-header h1 {
+    font-size: 1.1rem;
+  }
+  .header-illustration {
+    width: 48px;
+    height: 48px;
+  }
+  .sticky-search-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0.2rem;
+  }
+}
