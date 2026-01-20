@@ -17,6 +17,10 @@ const Navbar = () => {
           <Link to="/doctors" className={location.pathname === "/doctors" ? "active" : ""}>Find a Doctor</Link>
         </li>
         {/* Add more nav links as needed */}
+
+        <li>
+          <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+        </li>
       </ul>
     </nav>
   );

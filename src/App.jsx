@@ -1,16 +1,27 @@
 import React from 'react';
-// import './App.css';
-import HeroSection from './components/HeroSection';
-import QuickSearch from './components/QuickSearch';
-import FeaturedDoctors from './components/FeaturedDoctors';
-import HowItWorks from './components/HowItWorks';
-import RoleBasedCTA from './components/RoleBasedCTA';
-import Footer from './components/Footer';
-import mockDoctors from './mockDoctors';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DoctorsListPage from './components/DoctorsListPage';
-import Navbar from './components/Navbar';
-import DoctorProfilePage from './components/DoctorProfilePage';
+// import './App.css';
+import {
+  HeroSection,
+  QuickSearch,
+  FeaturedDoctors,
+  HowItWorks,
+  RoleBasedCTA,
+  Footer,
+  Navbar,
+  DoctorsListPage,
+  DoctorProfilePage,
+  LoginPage,
+  RegisterPage,
+  DashboardPage,
+  AppointmentsPage,
+  ProfilePage,
+  SettingsPage,
+  PatientsPage,
+  mockDoctors,
+  AppointmentDetailPage,
+  ProtectedRoute,
+} from './components';
 
 function App() {
   // Navigation handlers (stubbed for now)
@@ -42,9 +53,9 @@ function App() {
           <Route path="/" element={
             <>
               <HeroSection onFindDoctor={handleFindDoctor} onLogin={handleLogin} />
-              <div id="quick-search">
+              {/* <div id="quick-search">
                 <QuickSearch onSearch={handleSearch} />
-              </div>
+              </div> */}
               <FeaturedDoctors doctors={mockDoctors} onViewProfile={handleViewProfile} />
               <HowItWorks />
               <RoleBasedCTA onRegisterProvider={handleRegisterProvider} onLogin={handleLogin} />
@@ -53,6 +64,18 @@ function App() {
           } />
           <Route path="/doctors" element={<DoctorsListPage />} />
           <Route path="/doctors/:id" element={<DoctorProfilePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dash" element={<DashboardPage />} />
+          <Route path="/dash/appointments" element={<AppointmentsPage />} />
+          <Route path="/dash/profile" element={<ProfilePage />} />
+          <Route path="/dash/settings" element={<SettingsPage />} />
+          <Route 
+          path="/dash/patients" 
+          element={<PatientsPage /> } />
+          <Route path="/dash/appointments/:id" element={<AppointmentDetailPage />} />
+
+          {/* Add more routes as needed */}
         </Routes>
       </div>
     </Router>

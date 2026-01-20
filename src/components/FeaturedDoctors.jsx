@@ -13,7 +13,7 @@ const FeaturedDoctors = ({ doctors, onViewProfile }) => (
             <h3>{doc.name}</h3>
             <p className="specialty">{doc.specialty}</p>
             <p className="rating">⭐ {doc.rating}</p>
-            <button onClick={() => onViewProfile(doc.id)} className="view-profile-btn">View Profile</button>
+           
           </div>
         </div>
       ))}

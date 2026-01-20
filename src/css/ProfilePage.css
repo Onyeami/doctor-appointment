@@ -1,0 +1,29 @@
+.profile-card-container {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  text-align: center;
+  width: 320px;
+}
+
+.profile-card img.doctor-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #b2ebf2;
+  margin-bottom: 1rem;
+}
+
+.specialty {
+  color: #0096c7;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
