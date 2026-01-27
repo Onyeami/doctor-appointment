@@ -12,8 +12,12 @@ import {
   DoctorsListPage,
   DoctorProfilePage,
   LoginPage,
+  DoctorLoginPage,
   RegisterPage,
+  RegisterDoctorPage,
   DashboardPage,
+  DoctorDashboardPage,
+  PatientDashboardPage,
   AppointmentsPage,
   ProfilePage,
   SettingsPage,
@@ -24,25 +28,41 @@ import {
 } from './components';
 
 function App() {
+  const [featuredDoctors, setFeaturedDoctors] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/doctors');
+        if (response.ok) {
+          const data = await response.json();
+          // Take top 3 or random 3
+          setFeaturedDoctors(data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Failed to fetch featured doctors", error);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
   // Navigation handlers (stubbed for now)
   const handleFindDoctor = () => {
     window.location.href = '/doctors';
   };
   const handleLogin = () => {
-    // Implement navigation to login/register page
-    alert('Navigate to Login/Register');
+    window.location.href = '/login';
   };
   const handleSearch = (searchParams) => {
     // Implement search logic or navigation
-    alert(`Searching for: ${JSON.stringify(searchParams)}`);
+    console.log(`Searching for: ${JSON.stringify(searchParams)}`);
   };
   const handleViewProfile = (doctorId) => {
-    // Implement navigation to doctor profile
-    alert(`View profile for doctor ID: ${doctorId}`);
+    window.location.href = `/doctors/${doctorId}`;
   };
   const handleRegisterProvider = () => {
-    // Implement navigation to provider registration
-    alert('Navigate to Provider Registration');
+    // Navigate to provider registration
+    window.location.href = '/register-doctor';
   };
 
   return (
@@ -56,7 +76,7 @@ function App() {
               {/* <div id="quick-search">
                 <QuickSearch onSearch={handleSearch} />
               </div> */}
-              <FeaturedDoctors doctors={mockDoctors} onViewProfile={handleViewProfile} />
+              <FeaturedDoctors doctors={featuredDoctors} onViewProfile={handleViewProfile} />
               <HowItWorks />
               <RoleBasedCTA onRegisterProvider={handleRegisterProvider} onLogin={handleLogin} />
               <Footer />
@@ -65,14 +85,27 @@ function App() {
           <Route path="/doctors" element={<DoctorsListPage />} />
           <Route path="/doctors/:id" element={<DoctorProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login-doctor" element={<DoctorLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dash" element={<DashboardPage />} />
-          <Route path="/dash/appointments" element={<AppointmentsPage />} />
-          <Route path="/dash/profile" element={<ProfilePage />} />
-          <Route path="/dash/settings" element={<SettingsPage />} />
-          <Route 
-          path="/dash/patients" 
-          element={<PatientsPage /> } />
+          <Route path="/register-doctor" element={<RegisterDoctorPage />} />
+          <Route path="/dash" element={<PatientDashboardPage />} />
+          <Route path="/patient-dash" element={<PatientDashboardPage />} />
+          <Route path="/doctor-dash" element={<DoctorDashboardPage />} />
+
+          {/* Patient Routes */}
+          <Route path="/dash/appointments" element={<AppointmentsPage basePath="/patient-dash" />} />
+          <Route path="/patient-dash/appointments" element={<AppointmentsPage basePath="/patient-dash" />} />
+          <Route path="/dash/profile" element={<ProfilePage basePath="/patient-dash" />} />
+          <Route path="/patient-dash/profile" element={<ProfilePage basePath="/patient-dash" />} />
+          <Route path="/dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
+          <Route path="/patient-dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
+
+          {/* Doctor Routes */}
+          <Route path="/doctor-dash/appointments" element={<AppointmentsPage basePath="/doctor-dash" />} />
+          <Route path="/doctor-dash/patients" element={<PatientsPage basePath="/doctor-dash" />} />
+          <Route path="/doctor-dash/profile" element={<ProfilePage basePath="/doctor-dash" />} />
+          <Route path="/doctor-dash/settings" element={<SettingsPage basePath="/doctor-dash" />} />
+          <Route path="/dash/patients" element={<PatientsPage basePath="/doctor-dash" />} />
           <Route path="/dash/appointments/:id" element={<AppointmentDetailPage />} />
 
           {/* Add more routes as needed */}

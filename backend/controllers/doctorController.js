@@ -40,7 +40,52 @@ const getDoctorById = async (req, res) => {
   }
 };
 
+// @desc    Get patients for the logged-in doctor
+// @route   GET /api/doctors/patients
+// @access  Private (Doctor only)
+const getDoctorPatients = async (req, res) => {
+  try {
+    // 1. Get Doctor ID from User ID
+    const [doctor] = await db.execute('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+    
+    if (doctor.length === 0) {
+      return res.status(404).json({ message: 'Doctor profile not found' });
+    }
+
+    const doctorId = doctor[0].id;
+
+    // 2. Get unique patients with their latest appointment details
+    // using a subquery to get the latest appointment for each patient
+    const query = `
+      SELECT 
+        u.id, 
+        u.name, 
+        u.email, 
+        MAX(a.appointment_date) as lastVisit,
+        (SELECT notes FROM appointments a2 WHERE a2.patient_id = u.id AND a2.doctor_id = ? ORDER BY a2.appointment_date DESC LIMIT 1) as 'condition',
+        CASE 
+          WHEN MAX(a.appointment_date) >= CURDATE() THEN 'Active'
+          ELSE 'Inactive'
+        END as status
+      FROM users u
+      JOIN appointments a ON u.id = a.patient_id
+      WHERE a.doctor_id = ?
+      GROUP BY u.id, u.name, u.email
+    `;
+
+    const [patients] = await db.execute(query, [doctorId, doctorId]);
+    
+    // Format dates if needed, or leave to frontend
+    res.json(patients);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   getDoctors,
   getDoctorById,
+  getDoctorPatients,
 };

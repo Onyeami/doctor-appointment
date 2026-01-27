@@ -9,7 +9,7 @@ const RoleBasedCTA = ({ onRegisterProvider, onLogin }) => (
     <button className="register-provider-btn" onClick={onRegisterProvider}>
       Register as a Healthcare Provider
     </button>
-    <button className="login-link" onClick={onLogin}>
+    <button className="login-link" onClick={() => window.location.href = '/login-doctor'}>
       Already have an account? Login
     </button>
   </section>

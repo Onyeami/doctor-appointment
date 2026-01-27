@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ProfileCard from "./ProfileCard";
+import DashboardSidebar from "./DashboardSidebar";
 import "../css/DashboardPage.css";
 import "../css/ProfilePage.css";
 
-export default function ProfilePage() {
+export default function ProfilePage({ basePath = '/dash' }) {
   const [doctor, setDoctor] = useState({
     name: "Dr. Martins Onyia",
     specialty: "Dentist",
@@ -13,20 +14,8 @@ export default function ProfilePage() {
   });
 
   return (
-
-
-
     <div className="dashboard-page">
-      <aside className="dashboard-sidebar">
-        <h2 className="sidebar-title">My Dashboard</h2>
-        <nav className="sidebar-nav">
-          <a href="/dash" className="nav-item active">Home</a>
-          <a href="/dash/appointments" className="nav-item">Appointments</a>
-          <a href="/dash/patients" className="nav-item">Patients</a>
-          <a href="/dash/profile" className="nav-item">Profile</a>
-          <a href="/dash/settings" className="nav-item">Settings</a>
-        </nav>
-      </aside>
+      <DashboardSidebar basePath={basePath} activePage="profile" />
 
       <main className="dashboard-main">
         <div className="page-container">

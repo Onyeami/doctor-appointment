@@ -2,47 +2,86 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
+// @desc    Register a new patient
+// @route   POST /api/auth/register/patient
 // @access  Public
-const registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+const registerPatient = async (req, res) => {
+  const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please include all fields' });
   }
 
   try {
-    // Check if user exists
     const [existingUsers] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
     const [result] = await db.execute(
       'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
-      [name, email, hashedPassword, role || 'patient']
+      [name, email, hashedPassword, 'patient']
     );
 
-    if (result.affectedRows === 1) {
-      res.status(201).json({
-        id: result.insertId,
-        name,
-        email,
-        role: role || 'patient',
-        token: generateToken(result.insertId, role || 'patient'),
-      });
-    } else {
-      res.status(400).json({ message: 'Invalid user data' });
-    }
+    res.status(201).json({
+      id: result.insertId,
+      name,
+      email,
+      role: 'patient',
+      token: generateToken(result.insertId, 'patient'),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Register a new doctor
+// @route   POST /api/auth/register/doctor
+// @access  Public
+const registerDoctor = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Please include all fields' });
+  }
+
+  try {
+    const [existingUsers] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 1. Create User
+    const [userResult] = await db.execute(
+      'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, 'doctor']
+    );
+
+    const userId = userResult.insertId;
+
+    // 2. Create Doctor Profile (Empty/Default)
+    await db.execute(
+      'INSERT INTO doctors (user_id, specialty, rating, bio, hourly_rate) VALUES (?, ?, ?, ?, ?)',
+      [userId, 'General Practitioner', 0, 'No bio provided yet.', 0.00]
+    );
+
+    res.status(201).json({
+      id: userId,
+      name,
+      email,
+      role: 'doctor',
+      token: generateToken(userId, 'doctor'),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
 
@@ -80,6 +119,7 @@ const generateToken = (id, role) => {
 };
 
 module.exports = {
-  registerUser,
+  registerPatient,
+  registerDoctor,
   loginUser,
 };

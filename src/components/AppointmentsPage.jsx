@@ -1,5 +1,6 @@
 import React from "react";
 import AppointmentRow from "./AppointmentRow";
+import DashboardSidebar from "./DashboardSidebar";
 import "../css/DashboardPage.css";
 import "../css/Tables.css";
 
@@ -9,20 +10,11 @@ const mockAppointments = [
   { id: 3, patient: "Mike Johnson", date: "2026-01-14", time: "02:00 PM", status: "Cancelled" },
 ];
 
-export default function AppointmentsPage() {
+export default function AppointmentsPage({ basePath = '/dash' }) {
   return (
-
     <div className="dashboard-page">
-      <aside className="dashboard-sidebar">
-        <h2 className="sidebar-title">My Dashboard</h2>
-        <nav className="sidebar-nav">
-          <a href="/dash" className="nav-item active">Home</a>
-          <a href="/dash/appointments" className="nav-item">Appointments</a>
-          <a href="/dash/patients" className="nav-item">Patients</a>
-          <a href="/dash/profile" className="nav-item">Profile</a>
-          <a href="/dash/settings" className="nav-item">Settings</a>
-        </nav>
-      </aside>
+      <DashboardSidebar basePath={basePath} activePage="appointments" />
+
 
       <main className="dashboard-main">
         <div className="page-container">

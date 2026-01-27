@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import QuickSearch from './QuickSearch';
 import DoctorCard from './DoctorCard';
-import mockDoctors from '../mockDoctors';
 import '../css/DoctorsListPage.css';
 
 const sortDoctors = (doctors, sortBy) => {
   if (sortBy === 'rating') {
-    return [...doctors].sort((a, b) => b.rating - a.rating);
+    return [...doctors].sort((a, b) => (b.rating || 0) - (a.rating || 0));
   }
-  // Add more sort logic as needed
   return doctors;
 };
 
 const DoctorsListPage = () => {
+  const [doctors, setDoctors] = useState([]);
   const [searchParams, setSearchParams] = useState({ name: '', specialty: '', location: '' });
   const [sortBy, setSortBy] = useState('rating');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch Doctors from API
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/doctors');
+        const data = await response.json();
+
+        if (response.ok) {
+          // Map API data to component expectation if needed, or just use as is
+          setDoctors(data);
+        } else {
+          setError('Failed to load doctors');
+        }
+      } catch (err) {
+        setError('Network error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
 
   // Filter logic
   const filteredDoctors = sortDoctors(
-    mockDoctors.filter(doc => {
+    doctors.filter(doc => {
       const matchesName = searchParams.name === '' || doc.name.toLowerCase().includes(searchParams.name.toLowerCase());
-      const matchesSpecialty = searchParams.specialty === '' || doc.specialty === searchParams.specialty;
-      const matchesLocation = searchParams.location === '' || (doc.location && doc.location.toLowerCase().includes(searchParams.location.toLowerCase()));
+      const matchesSpecialty = searchParams.specialty === '' || (doc.specialty && doc.specialty.includes(searchParams.specialty));
+      // Location logic might need adjustment based on backend data structure
+      const matchesLocation = true;
       return matchesName && matchesSpecialty && matchesLocation;
     }),
     sortBy
@@ -39,7 +62,9 @@ const DoctorsListPage = () => {
         <QuickSearch onSearch={setSearchParams} />
       </div>
       {loading ? (
-        <div className="skeleton-loader">Loading...</div>
+        <div className="skeleton-loader">Loading doctors...</div>
+      ) : error ? (
+        <div className="error-message">Error: {error}</div>
       ) : filteredDoctors.length === 0 ? (
         <div className="empty-state">
           <p>No doctors found matching your criteria.</p>

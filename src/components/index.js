@@ -10,8 +10,12 @@ import DoctorsListPage from './DoctorsListPage';
 import Navbar from './Navbar';
 import DoctorProfilePage from './DoctorProfilePage';
 import LoginPage from './Loginpage';
+import DoctorLoginPage from './DoctorLoginPage';
 import RegisterPage from './RegisterPage';
+import RegisterDoctorPage from './RegisterDoctorPage';
 import DashboardPage from './DashboardPage';
+import DoctorDashboardPage from './DoctorDashboardPage';
+import PatientDashboardPage from './PatientDashboardPage';
 import AppointmentsPage from './AppointmentsPage';
 import  AppointmentDetailPage from './AppointmentDetailPage'
 import ProfilePage from './ProfilePage';
@@ -33,8 +37,12 @@ export  {
     Navbar,
     DoctorProfilePage,
     LoginPage,
+    DoctorLoginPage,
     RegisterPage,
+    RegisterDoctorPage,
     DashboardPage,
+    DoctorDashboardPage,
+    PatientDashboardPage,
     AppointmentsPage,
     ProfilePage,
     SettingsPage,
