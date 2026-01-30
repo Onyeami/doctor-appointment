@@ -13,7 +13,11 @@ const FeaturedDoctors = ({ doctors, onViewProfile }) => (
       <div className="doctors-grid">
         {doctors.map((doc) => (
           <div className="doctor-card" key={doc.id}>
-            <img src={doc.photo_url || "https://via.placeholder.com/150"} alt={doc.name} className="doctor-avatar" />
+            <img
+              src={doc.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.name)}&size=150&background=4F46E5&color=fff`}
+              alt={doc.name}
+              className="doctor-avatar"
+            />
             <div className="doctor-info">
               <h3>{doc.name}</h3>
               <p className="specialty">{doc.specialty}</p>

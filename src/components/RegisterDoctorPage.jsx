@@ -41,9 +41,8 @@ export default function RegisterDoctorPage() {
             const data = await response.json();
 
             if (response.ok) {
-                // Successful registration
-                localStorage.setItem('user', JSON.stringify(data));
-                navigate('/dash');
+                // Successful registration - redirect to login page
+                navigate('/login-doctor');
             } else {
                 setError(data.message || 'Registration failed');
             }

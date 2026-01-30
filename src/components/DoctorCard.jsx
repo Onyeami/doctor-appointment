@@ -8,7 +8,11 @@ const DoctorCard = ({ doctor }) => {
   };
   return (
     <article className="doctor-card" tabIndex={0} aria-label={`View profile for ${doctor.name}`}>
-      <img src={doctor.photo} alt={doctor.name} className="doctor-avatar" />
+      <img
+        src={doctor.photo_url || doctor.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=150&background=4F46E5&color=fff`}
+        alt={doctor.name}
+        className="doctor-avatar"
+      />
       <div className="doctor-info">
         <h3>{doctor.name}</h3>
         <div className="specialty">{doctor.specialty}</div>

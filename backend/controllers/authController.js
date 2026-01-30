@@ -66,10 +66,12 @@ const registerDoctor = async (req, res) => {
 
     const userId = userResult.insertId;
 
-    // 2. Create Doctor Profile (Empty/Default)
+    // 2. Create Doctor Profile with default placeholder image
+    const defaultPhotoUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&size=150&background=4F46E5&color=fff';
+
     await db.execute(
-      'INSERT INTO doctors (user_id, specialty, rating, bio, hourly_rate) VALUES (?, ?, ?, ?, ?)',
-      [userId, 'General Practitioner', 0, 'No bio provided yet.', 0.00]
+      'INSERT INTO doctors (user_id, specialty, rating, bio, hourly_rate, photo_url) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, 'General Practitioner', 0, 'No bio provided yet.', 0.00, defaultPhotoUrl]
     );
 
     res.status(201).json({

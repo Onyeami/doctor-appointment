@@ -16,19 +16,31 @@ const getAppointments = async (req, res) => {
         return res.status(404).json({ message: 'Doctor profile not found' });
       }
       query = `
-        SELECT a.*, u.name as patient_name, u.email as patient_email 
+        SELECT a.*, 
+               u.name as patient_name, 
+               u.email as patient_email,
+               du.name as doctor_name,
+               d.specialty,
+               d.photo_url
         FROM appointments a 
         JOIN users u ON a.patient_id = u.id 
+        JOIN doctors d ON a.doctor_id = d.id
+        JOIN users du ON d.user_id = du.id
         WHERE a.doctor_id = ?
       `;
       params = [doctor[0].id];
     } else {
       // If patient, get appointments where patient_id matches
       query = `
-        SELECT a.*, d.specialty, u.name as doctor_name, d.photo_url 
+        SELECT a.*, 
+               u.name as doctor_name,
+               pu.name as patient_name,
+               d.specialty, 
+               d.photo_url 
         FROM appointments a 
         JOIN doctors d ON a.doctor_id = d.id 
         JOIN users u ON d.user_id = u.id 
+        JOIN users pu ON a.patient_id = pu.id
         WHERE a.patient_id = ?
       `;
       params = [req.user.id];
@@ -36,6 +48,52 @@ const getAppointments = async (req, res) => {
 
     const [appointments] = await db.execute(query, params);
     res.json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Get single appointment by ID
+// @route   GET /api/appointments/:id
+// @access  Private
+const getAppointmentById = async (req, res) => {
+  try {
+    let query;
+    let params;
+
+    if (req.user.role === 'doctor') {
+      // Doctor can view appointments where they are the doctor
+      const [doctor] = await db.execute('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+      if (doctor.length === 0) {
+        return res.status(404).json({ message: 'Doctor profile not found' });
+      }
+      query = `
+        SELECT a.*, u.name as patient_name, u.email as patient_email 
+        FROM appointments a 
+        JOIN users u ON a.patient_id = u.id 
+        WHERE a.id = ? AND a.doctor_id = ?
+      `;
+      params = [req.params.id, doctor[0].id];
+    } else {
+      // Patient can view their own appointments
+      query = `
+        SELECT a.*, d.specialty, u.name as doctor_name, d.photo_url 
+        FROM appointments a 
+        JOIN doctors d ON a.doctor_id = d.id 
+        JOIN users u ON d.user_id = u.id 
+        WHERE a.id = ? AND a.patient_id = ?
+      `;
+      params = [req.params.id, req.user.id];
+    }
+
+    const [appointments] = await db.execute(query, params);
+
+    if (appointments.length === 0) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json(appointments[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -95,8 +153,41 @@ const updateAppointment = async (req, res) => {
   }
 };
 
+// @desc    Reschedule appointment
+// @route   PUT /api/appointments/:id/reschedule
+// @access  Private
+const rescheduleAppointment = async (req, res) => {
+  const { appointment_date } = req.body;
+
+  if (!appointment_date) {
+    return res.status(400).json({ message: 'Please provide new appointment date' });
+  }
+
+  try {
+    const [result] = await db.execute(
+      'UPDATE appointments SET appointment_date = ? WHERE id = ?',
+      [appointment_date, req.params.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json({
+      id: req.params.id,
+      appointment_date,
+      message: 'Appointment rescheduled successfully'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   getAppointments,
+  getAppointmentById,
   createAppointment,
   updateAppointment,
+  rescheduleAppointment,
 };

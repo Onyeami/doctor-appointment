@@ -93,7 +93,11 @@ const DoctorProfilePage = () => {
   return (
     <div className="doctor-profile-page">
       <div className="profile-left">
-        <img src={doctor.photo_url || "https://via.placeholder.com/150"} alt={doctor.name} className="doctor-avatar-large" />
+        <img
+          src={doctor.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=150&background=4F46E5&color=fff`}
+          alt={doctor.name}
+          className="doctor-avatar-large"
+        />
         <h2>{doctor.name}</h2>
         <div className="specialty">{doctor.specialty}</div>
 
