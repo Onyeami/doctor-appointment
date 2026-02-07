@@ -107,7 +107,7 @@ const DoctorProfilePage = () => {
         </div>
 
         <div className="details-grid">
-          <div className="rate-info"><strong>Rate:</strong> {doctor.hourly_rate ? `₦${doctor.hourly_rate}/hr` : 'Not specified'}</div>
+          <div className="rate-info"><strong>Rate:</strong> {doctor.hourly_rate ? `€${doctor.hourly_rate}/hr` : 'Not specified'}</div>
           <div className="rating-info"><strong>Rating:</strong> {doctor.rating || 'N/A'} ⭐</div>
         </div>
       </div>

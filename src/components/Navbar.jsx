@@ -34,7 +34,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <Link to="/">DentApp</Link>
+        <Link to="/">Doctor-App</Link>
       </div>
       <ul className="navbar-links">
         {!isLoggedIn ? (
