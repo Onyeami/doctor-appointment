@@ -120,8 +120,22 @@ const generateToken = (id, role) => {
   });
 };
 
+// @desc    Delete user account
+// @route   DELETE /api/auth/me
+// @access  Private
+const deleteUser = async (req, res) => {
+  try {
+    await db.execute('DELETE FROM users WHERE id = ?', [req.user.id]);
+    res.json({ message: 'User account deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   registerPatient,
   registerDoctor,
   loginUser,
+  deleteUser,
 };
