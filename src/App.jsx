@@ -24,6 +24,7 @@ import {
   PatientsPage,
   AppointmentDetailPage,
   ProtectedRoute,
+  BookingForm,
 } from './components';
 
 function App() {
@@ -98,6 +99,8 @@ function App() {
           <Route path="/patient-dash/profile" element={<ProfilePage basePath="/patient-dash" />} />
           <Route path="/dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
           <Route path="/patient-dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
+          <Route path="/dash/book" element={<BookingForm basePath="/patient-dash" />} />
+          <Route path="/doctor-dash/book" element={<BookingForm basePath="/doctor-dash" />} />
 
           {/* Doctor Routes */}
           <Route path="/doctor-dash/appointments" element={<AppointmentsPage basePath="/doctor-dash" />} />

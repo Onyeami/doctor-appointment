@@ -12,6 +12,7 @@ export default function DashboardSidebar({ basePath = '/dash', activePage }) {
             <nav className="sidebar-nav">
                 <a href={`${basePath}`} className={`nav-item ${activePage === 'home' ? 'active' : ''}`}>Home</a>
                 <a href={`${basePath}/appointments`} className={`nav-item ${activePage === 'appointments' ? 'active' : ''}`}>Appointments</a>
+                <a href={`${basePath}/book`} className={`nav-item ${activePage === 'book' ? 'active' : ''}`}>Book Appointment</a>
 
                 {isDoctor && (
                     <a href={`${basePath}/patients`} className={`nav-item ${activePage === 'patients' ? 'active' : ''}`}>Patients</a>
