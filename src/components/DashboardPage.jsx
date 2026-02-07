@@ -15,19 +15,19 @@ export default function DashboardPage() {
       </aside>
 
       <main className="dashboard-main">
-        <h3 className="dashboard-heading">Welcome, Doctor!</h3>
+        <h3 className="dashboard-heading">Dashboard Overview</h3>
         <div className="cards-container">
           <div className="dashboard-card">
             <h4>Total Appointments</h4>
-            <p>24</p>
+            <p>--</p>
           </div>
           <div className="dashboard-card">
             <h4>Upcoming Patients</h4>
-            <p>8</p>
+            <p>--</p>
           </div>
           <div className="dashboard-card">
             <h4>New Messages</h4>
-            <p>5</p>
+            <p>--</p>
           </div>
         </div>
       </main>

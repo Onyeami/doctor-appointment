@@ -1,34 +1,42 @@
-CREATE DATABASE IF NOT EXISTS doctor_appointment_db;
-USE doctor_appointment_db;
+-- SQL Server Schema for Doctor Appointment App
 
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  role ENUM('patient', 'doctor', 'admin') DEFAULT 'patient',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'users')
+BEGIN
+    CREATE TABLE users (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        name NVARCHAR(255) NOT NULL,
+        email NVARCHAR(255) NOT NULL UNIQUE,
+        password_hash NVARCHAR(255) NOT NULL,
+        role NVARCHAR(50) DEFAULT 'patient' CHECK (role IN ('patient', 'doctor', 'admin')),
+        created_at DATETIME2 DEFAULT GETDATE()
+    )
+END;
 
-CREATE TABLE IF NOT EXISTS doctors (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  specialty VARCHAR(100),
-  rating DECIMAL(2, 1) DEFAULT 0.0,
-  photo_url VARCHAR(255),
-  bio TEXT,
-  hourly_rate DECIMAL(10, 2),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'doctors')
+BEGIN
+    CREATE TABLE doctors (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        user_id INT NOT NULL,
+        specialty NVARCHAR(100),
+        rating DECIMAL(3, 1) DEFAULT 0.0,
+        photo_url NVARCHAR(255),
+        bio NVARCHAR(MAX),
+        hourly_rate DECIMAL(10, 2),
+        CONSTRAINT FK_Doctors_Users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+END;
 
-CREATE TABLE IF NOT EXISTS appointments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  patient_id INT NOT NULL,
-  doctor_id INT NOT NULL,
-  appointment_date DATETIME NOT NULL,
-  status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
-);
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'appointments')
+BEGIN
+    CREATE TABLE appointments (
+        id INT IDENTITY(1,1) PRIMARY KEY,
+        patient_id INT NOT NULL,
+        doctor_id INT NOT NULL,
+        appointment_date DATETIME2 NOT NULL,
+        status NVARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
+        notes NVARCHAR(MAX),
+        created_at DATETIME2 DEFAULT GETDATE(),
+        CONSTRAINT FK_Appointments_Patients FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE NO ACTION,
+        CONSTRAINT FK_Appointments_Doctors FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+    )
+END;

@@ -22,16 +22,18 @@ const registerPatient = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const [result] = await db.execute(
-      'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+      'INSERT INTO users (name, email, password_hash, role) OUTPUT INSERTED.id VALUES (?, ?, ?, ?)',
       [name, email, hashedPassword, 'patient']
     );
 
+    const userId = result.insertId;
+
     res.status(201).json({
-      id: result.insertId,
+      id: userId,
       name,
       email,
       role: 'patient',
-      token: generateToken(result.insertId, 'patient'),
+      token: generateToken(userId, 'patient'),
     });
   } catch (error) {
     console.error(error);
@@ -60,7 +62,7 @@ const registerDoctor = async (req, res) => {
 
     // 1. Create User
     const [userResult] = await db.execute(
-      'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+      'INSERT INTO users (name, email, password_hash, role) OUTPUT INSERTED.id VALUES (?, ?, ?, ?)',
       [name, email, hashedPassword, 'doctor']
     );
 

@@ -36,6 +36,25 @@ const getPatientStats = async (req, res) => {
     }
 };
 
+const getPatientProfile = async (req, res) => {
+    try {
+        const [patient] = await db.execute(
+            'SELECT id, name, email, created_at FROM users WHERE id = ?',
+            [req.user.id]
+        );
+
+        if (patient.length === 0) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+
+        res.json(patient[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     getPatientStats,
+    getPatientProfile
 };

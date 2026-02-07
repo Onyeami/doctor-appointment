@@ -17,9 +17,9 @@ const DoctorCard = ({ doctor }) => {
         <h3>{doctor.name}</h3>
         <div className="specialty">{doctor.specialty}</div>
         {doctor.clinic && <div className="clinic-info">{doctor.clinic} &middot; {doctor.location}</div>}
-        <div className="rating" aria-label={`Rating: ${doctor.rating} out of 5`}>
-          {"★".repeat(Math.round(doctor.rating))}
-          <span className="rating-value">{doctor.rating}</span>
+        <div className="rating" aria-label={`Rating: ${doctor.rating || 0} out of 5`}>
+          {"★".repeat(Math.round(doctor.rating || 0))}
+          {doctor.rating ? <span className="rating-value">{doctor.rating}</span> : <span className="rating-value">N/A</span>}
         </div>
         <button className="view-profile-btn" onClick={handleViewProfile}>View Profile</button>
       </div>
