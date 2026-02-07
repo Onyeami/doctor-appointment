@@ -22,7 +22,6 @@ import {
   ProfilePage,
   SettingsPage,
   PatientsPage,
-  mockDoctors,
   AppointmentDetailPage,
   ProtectedRoute,
 } from './components';
