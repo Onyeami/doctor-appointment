@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
+import ReviewForm from "./ReviewForm";
 import "../css/Tables.css";
 import "../css/DashboardPage.css";
 
@@ -320,6 +321,81 @@ export default function AppointmentDetailPage() {
             {appointment.status === 'cancelled' && (
               <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#fee', borderRadius: '5px' }}>
                 <p style={{ color: 'red', margin: 0 }}>This appointment has been cancelled.</p>
+              </div>
+            )}
+
+            {/* Medical Records Section */}
+            <div className="medical-records-section" style={{ marginTop: '30px', borderTop: '2px solid #eee', paddingTop: '20px' }}>
+              <h3 style={{ marginBottom: '15px' }}>Medical Record</h3>
+
+              {isDoctor ? (
+                <div className="doctor-record-form">
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Diagnosis</label>
+                    <input
+                      type="text"
+                      placeholder="Principal Diagnosis"
+                      style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
+                      id="diagnosis"
+                    />
+                  </div>
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Prescription</label>
+                    <textarea
+                      placeholder="Medications and dosage..."
+                      style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd', minHeight: '80px' }}
+                      id="prescription"
+                    ></textarea>
+                  </div>
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Treatment Plan</label>
+                    <textarea
+                      placeholder="Follow-up instructions, therapy, etc..."
+                      style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd', minHeight: '80px' }}
+                      id="treatment_plan"
+                    ></textarea>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const diag = document.getElementById('diagnosis').value;
+                      const presc = document.getElementById('prescription').value;
+                      const plan = document.getElementById('treatment_plan').value;
+
+                      const response = await fetch('http://localhost:3000/api/medical-records', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${user.token}`
+                        },
+                        body: JSON.stringify({
+                          patient_id: appointment.patient_id,
+                          appointment_id: appointment.id,
+                          diagnosis: diag,
+                          prescription: presc,
+                          treatment_plan: plan
+                        })
+                      });
+                      if (response.ok) alert('Medical record saved!');
+                      else alert('Failed to save record');
+                    }}
+                    style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    Save Clinical Note
+                  </button>
+                </div>
+              ) : (
+                <div className="patient-record-view">
+                  {/* This could fetch existing record for this appointment if we want to be fancy, 
+                       but for now we suggest they check their history or we can add a mini-fetch here */}
+                  <p style={{ color: '#666' }}>Clinical notes from this visit will appear in your <a href="/patient-dash/history" style={{ color: '#3b82f6' }}>Medical History</a>.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Review Section (for Patients) */}
+            {!isDoctor && appointment.status === 'confirmed' && (
+              <div style={{ marginTop: '30px', borderTop: '2px solid #eee', paddingTop: '20px' }}>
+                <ReviewForm appointmentId={appointment.id} />
               </div>
             )}
           </div>

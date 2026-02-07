@@ -17,6 +17,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/doctors', require('./routes/doctorRoutes'));
 app.use('/api/patients', require('./routes/patientRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/medical-records', require('./routes/medicalRecordRoutes'));
 
 app.get('/', (req, res) => {
   res.send('Doctor Appointment API is running');

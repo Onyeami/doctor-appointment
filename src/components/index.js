@@ -22,6 +22,7 @@ import SettingsPage from './SettingsPage';
 import PatientsPage from './PatientsPage';
 import ProtectedRoute from './ProtectedRoute';
 import BookingForm from './BookingForm';
+import MedicalHistory from './MedicalHistory';
 
 
 
@@ -49,4 +50,5 @@ export {
     AppointmentDetailPage,
     ProtectedRoute,
     BookingForm,
+    MedicalHistory,
 }

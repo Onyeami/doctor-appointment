@@ -8,6 +8,7 @@ const DoctorProfilePage = () => {
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reviews, setReviews] = useState([]);
 
   // Booking Form State
   const [booking, setBooking] = useState({
@@ -17,17 +18,28 @@ const DoctorProfilePage = () => {
   });
   const [bookingStatus, setBookingStatus] = useState({ loading: false, message: '', type: '' });
 
-  // Fetch Doctor Details
+  // Fetch Doctor Details and Reviews
   useEffect(() => {
-    const fetchDoctor = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/doctors/${id}`);
-        const data = await response.json();
+        const [docRes, revRes] = await Promise.all([
+          fetch(`http://localhost:3000/api/doctors/${id}`),
+          fetch(`http://localhost:3000/api/reviews/doctor/${id}`)
+        ]);
 
-        if (response.ok) {
-          setDoctor(data);
+        const [docData, revData] = await Promise.all([
+          docRes.json(),
+          revRes.json()
+        ]);
+
+        if (docRes.ok) {
+          setDoctor(docData);
         } else {
           setError('Doctor not found');
+        }
+
+        if (revRes.ok) {
+          setReviews(revData);
         }
       } catch (err) {
         setError('Network error');
@@ -35,7 +47,7 @@ const DoctorProfilePage = () => {
         setLoading(false);
       }
     };
-    fetchDoctor();
+    fetchData();
   }, [id]);
 
   const handleBookingChange = (e) => {
@@ -109,6 +121,25 @@ const DoctorProfilePage = () => {
         <div className="details-grid">
           <div className="rate-info"><strong>Rate:</strong> {doctor.hourly_rate ? `€${doctor.hourly_rate}/hr` : 'Not specified'}</div>
           <div className="rating-info"><strong>Rating:</strong> {doctor.rating || 'N/A'} ⭐</div>
+        </div>
+
+        <div className="reviews-section" style={{ marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+          <h3>Patient Reviews ({reviews.length})</h3>
+          {reviews.length === 0 ? (
+            <p style={{ color: '#666' }}>No reviews yet.</p>
+          ) : (
+            <div className="reviews-list">
+              {reviews.map(review => (
+                <div key={review.id} style={{ marginBottom: '15px', padding: '15px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontWeight: '600' }}>{review.patient_name}</span>
+                    <span style={{ color: '#fbbf24' }}>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#4b5563' }}>{review.comment || "No comment provided."}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
