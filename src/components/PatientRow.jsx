@@ -11,6 +11,15 @@ export default function PatientRow({ patient }) {
           {patient.status}
         </span>
       </td>
+      <td>
+        <button
+          className="book-btn"
+          onClick={() => patient.onBook(patient.id, patient.name)}
+          style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          Book
+        </button>
+      </td>
     </tr>
   );
 }

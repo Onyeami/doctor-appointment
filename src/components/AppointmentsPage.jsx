@@ -9,6 +9,32 @@ export default function AppointmentsPage({ basePath = '/dash' }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const response = await fetch(`http://localhost:3000/api/appointments/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (response.ok) {
+        // Update local state
+        setAppointments(prev => prev.map(apt =>
+          apt.id === id ? { ...apt, status: newStatus.charAt(0).toUpperCase() + newStatus.slice(1), rawStatus: newStatus } : apt
+        ));
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to update status');
+      }
+    } catch (err) {
+      setError('Network error');
+    }
+  };
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -29,10 +55,6 @@ export default function AppointmentsPage({ basePath = '/dash' }) {
 
         if (response.ok) {
           const data = await response.json();
-
-          // Get user role to determine which name to display
-          const userData = localStorage.getItem('user');
-          const user = userData ? JSON.parse(userData) : null;
           const isDoctor = user?.role === 'doctor';
 
           // Transform data to match the expected format
@@ -44,7 +66,8 @@ export default function AppointmentsPage({ basePath = '/dash' }) {
               hour: '2-digit',
               minute: '2-digit'
             }),
-            status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1)
+            status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
+            rawStatus: apt.status // Keep for logic
           }));
           setAppointments(formattedAppointments);
         } else {
@@ -95,7 +118,12 @@ export default function AppointmentsPage({ basePath = '/dash' }) {
                 </thead>
                 <tbody>
                   {appointments.map((app) => (
-                    <AppointmentRow key={app.id} appointment={app} />
+                    <AppointmentRow
+                      key={app.id}
+                      appointment={app}
+                      isDoctor={isDoctor}
+                      onStatusUpdate={handleStatusUpdate}
+                    />
                   ))}
                 </tbody>
               </table>

@@ -104,25 +104,57 @@ const getAppointmentById = async (req, res) => {
 // @route   POST /api/appointments
 // @access  Private
 const createAppointment = async (req, res) => {
-  const { doctor_id, appointment_date, notes } = req.body;
-
-  if (!doctor_id || !appointment_date) {
-    return res.status(400).json({ message: 'Please include doctor and date' });
-  }
+  const { doctor_id, patient_id, appointment_date, notes } = req.body;
 
   try {
+    let final_doctor_id = doctor_id;
+    let final_patient_id = patient_id;
+    let status = 'pending';
+
+    if (req.user.role === 'doctor') {
+      // Doctor initiated booking
+      if (!patient_id) {
+        return res.status(400).json({ message: 'Please include patient_id' });
+      }
+
+      // Get doctor record for current user
+      const [doctor] = await db.execute('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+      if (doctor.length === 0) {
+        return res.status(404).json({ message: 'Doctor profile not found' });
+      }
+      final_doctor_id = doctor[0].id;
+      status = 'proposed';
+
+      // Verify history exists (has at least one prior appointment)
+      const [history] = await db.execute(
+        'SELECT id FROM appointments WHERE patient_id = ? AND doctor_id = ? LIMIT 1',
+        [patient_id, final_doctor_id]
+      );
+
+      if (history.length === 0) {
+        return res.status(403).json({ message: 'You can only book appointments for patients you have a history with' });
+      }
+    } else {
+      // Patient initiated booking
+      if (!doctor_id) {
+        return res.status(400).json({ message: 'Please include doctor_id' });
+      }
+      final_patient_id = req.user.id;
+      status = 'pending';
+    }
+
     const [result] = await db.execute(
-      'INSERT INTO appointments (patient_id, doctor_id, appointment_date, notes) VALUES (?, ?, ?, ?)',
-      [req.user.id, doctor_id, appointment_date, notes]
+      'INSERT INTO appointments (patient_id, doctor_id, appointment_date, notes, status) VALUES (?, ?, ?, ?, ?)',
+      [final_patient_id, final_doctor_id, appointment_date, notes || '', status]
     );
 
     res.status(201).json({
       id: result.insertId,
-      patient_id: req.user.id,
-      doctor_id,
+      patient_id: final_patient_id,
+      doctor_id: final_doctor_id,
       appointment_date,
       notes,
-      status: 'pending'
+      status
     });
   } catch (error) {
     console.error(error);
