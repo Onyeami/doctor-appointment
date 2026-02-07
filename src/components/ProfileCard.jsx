@@ -15,7 +15,7 @@ export default function ProfileCard({ data, isDoctor }) {
         <>
           <p className="specialty">{data.specialty || 'General Practitioner'}</p>
           {data.clinic && <p>Clinic: {data.clinic}</p>}
-          <p>Rate: ₦{data.hourly_rate || '0'}/hr</p>
+          <p>Rate: €{data.hourly_rate || '0'}/hr</p>
         </>
       )}
       {data.email && <p>Email: {data.email}</p>}
