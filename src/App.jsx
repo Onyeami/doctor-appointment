@@ -100,6 +100,7 @@ function App() {
           <Route path="/dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
           <Route path="/patient-dash/settings" element={<SettingsPage basePath="/patient-dash" />} />
           <Route path="/dash/book" element={<BookingForm basePath="/patient-dash" />} />
+          <Route path="/patient-dash/book" element={<BookingForm basePath="/patient-dash" />} />
           <Route path="/doctor-dash/book" element={<BookingForm basePath="/doctor-dash" />} />
 
           {/* Doctor Routes */}
