@@ -1,4 +1,4 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -6,53 +6,45 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 /**
- * Initialize database connection and setup for SQL Server
+ * Initialize database connection and setup
+ * This function will:
+ * 1. Connect to MySQL server
+ * 2. Create database if it doesn't exist
+ * 3. Create tables if they don't exist
  */
 async function initializeDatabase() {
-    const config = {
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || '',
-        server: process.env.DB_SERVER || 'localhost',
-        options: {
-            encrypt: true,
-            trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE === 'true',
-        }
-    };
-
-    let pool;
+    let connection;
 
     try {
-        console.log('🔄 Connecting to SQL Server...');
-        pool = await sql.connect(config);
-        console.log('✅ Connected to SQL Server successfully');
+        console.log('🔄 Connecting to MySQL server...');
 
+        // First, connect without specifying a database
+        connection = await mysql.createConnection({
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            multipleStatements: true // Allow multiple SQL statements
+        });
+
+        console.log('✅ Connected to MySQL server successfully');
+
+        // Create database if it doesn't exist
         const dbName = process.env.DB_NAME || 'doctor_appointment_db';
         console.log(`🔄 Creating database '${dbName}' if it doesn't exist...`);
 
-        // Check if database exists
-        const dbCheck = await pool.request()
-            .query(`IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '${dbName}')
-                    BEGIN
-                        CREATE DATABASE [${dbName}]
-                    END`);
-
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
         console.log(`✅ Database '${dbName}' is ready`);
 
-        // Close master connection and connect to specific database
-        await pool.close();
-
-        config.database = dbName;
-        pool = await sql.connect(config);
+        // Use the database
+        await connection.query(`USE \`${dbName}\``);
 
         // Read and execute schema.sql
         const schemaPath = path.join(__dirname, '..', 'schema.sql');
         console.log('🔄 Reading schema file...');
 
-        let schema = fs.readFileSync(schemaPath, 'utf8');
+        const schema = fs.readFileSync(schemaPath, 'utf8');
 
-        // Split the schema into individual statements
-        // T-SQL uses GO as a batch separator, but for simple schemas we can split by semicolon
-        // We also need to be careful with GO if it exists
+        // Split the schema into individual statements (skip CREATE DATABASE and USE statements)
         const statements = schema
             .split(';')
             .map(stmt => stmt.trim())
@@ -66,26 +58,25 @@ async function initializeDatabase() {
 
         for (const statement of statements) {
             if (statement.trim()) {
-                try {
-                    await pool.request().query(statement);
-                } catch (stmtError) {
-                    console.error('⚠️ Warning executing statement:', statement.substring(0, 50) + '...', stmtError.message);
-                }
+                await connection.query(statement);
             }
         }
 
-        console.log('✅ All tables/constraints checked/created');
+        console.log('✅ All tables created successfully');
         console.log('✅ Database initialization complete!\n');
 
-        await pool.close();
+        await connection.end();
         return true;
 
     } catch (error) {
         console.error('❌ Database initialization failed:', error.message);
 
-        if (pool) {
-            await pool.close();
+        if (connection) {
+            await connection.end();
         }
+
+        // Don't throw the error, just return false
+        // This allows the server to start even if DB connection fails
         return false;
     }
 }

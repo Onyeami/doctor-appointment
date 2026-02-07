@@ -55,18 +55,20 @@ const getDoctorPatients = async (req, res) => {
     const doctorId = doctor[0].id;
 
     // 2. Get unique patients with their latest appointment details
-    const [patients] = await db.execute(`
+    const query = `
       SELECT 
         u.id, 
         u.name, 
         u.email, 
         MAX(a.appointment_date) as last_visit,
-        (SELECT status FROM appointments WHERE patient_id = u.id AND doctor_id = ? ORDER BY appointment_date DESC OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY) as status
+        (SELECT status FROM appointments WHERE patient_id = u.id AND doctor_id = ? ORDER BY appointment_date DESC LIMIT 1) as status
       FROM users u
       JOIN appointments a ON u.id = a.patient_id
       WHERE a.doctor_id = ?
-      GROUP BY u.id, u.name, u.email
-    `, [doctorId, doctorId]);
+      GROUP BY u.id
+    `;
+
+    const [patients] = await db.execute(query, [doctorId, doctorId]);
     res.json(patients);
 
   } catch (error) {
@@ -98,7 +100,7 @@ const getDoctorStats = async (req, res) => {
     // 3. Get today's appointments count
     const [todayResult] = await db.execute(
       `SELECT COUNT(*) as today FROM appointments 
-       WHERE doctor_id = ? AND CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE)`,
+       WHERE doctor_id = ? AND DATE(appointment_date) = CURDATE()`,
       [doctorId]
     );
 

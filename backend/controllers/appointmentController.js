@@ -112,14 +112,12 @@ const createAppointment = async (req, res) => {
 
   try {
     const [result] = await db.execute(
-      'INSERT INTO appointments (patient_id, doctor_id, appointment_date, notes) OUTPUT INSERTED.id VALUES (?, ?, ?, ?)',
+      'INSERT INTO appointments (patient_id, doctor_id, appointment_date, notes) VALUES (?, ?, ?, ?)',
       [req.user.id, doctor_id, appointment_date, notes]
     );
 
-    const appointmentId = result.insertId;
-
     res.status(201).json({
-      id: appointmentId,
+      id: result.insertId,
       patient_id: req.user.id,
       doctor_id,
       appointment_date,
